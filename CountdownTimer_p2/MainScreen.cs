@@ -202,6 +202,7 @@ namespace CountdownTimer_p2
         {
             BeginInvoke(() =>
             {
+                sounds.monster();
                 TimerLabel.BackColor = Color.YellowGreen; 
             });
         }
