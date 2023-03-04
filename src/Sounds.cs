@@ -1,6 +1,6 @@
 using System.Media;
 
-namespace CountdownTimer_p2;
+namespace WorkoutTimer;
 
 public class Sounds
 {

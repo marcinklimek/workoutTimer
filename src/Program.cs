@@ -1,4 +1,4 @@
-namespace CountdownTimer_p2
+namespace WorkoutTimer
 {
     internal static class Program
     {
@@ -8,10 +8,15 @@ namespace CountdownTimer_p2
         [STAThread]
         static void Main()
         {
+            WorkoutManager manager = new WorkoutManager();
+
+            HttpServer httpsrv = new HttpServer();
+            httpsrv.Start(manager);
+
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new MainScreen());
+            Application.Run(new MainScreen(manager));
         }
     }
 }

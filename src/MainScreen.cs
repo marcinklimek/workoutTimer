@@ -5,32 +5,33 @@ using System.Drawing.Text;
 using System.Text;
 using System.Timers;
 
-namespace CountdownTimer_p2
+namespace WorkoutTimer
 {
     public partial class MainScreen : Form
     {
         private Sounds sounds;
-        private WorkoutManager wm;
+        private WorkoutManager manager;
 
 
-        public MainScreen()
+        public MainScreen(WorkoutManager wm)
         {
             InitializeComponent();
 
+            manager = wm;
             sounds = new Sounds();
-            wm = new WorkoutManager();
+           
 
-            wm.OnLastRound += Wm_OnLastRound;
-            wm.OnLastTenSeconds += Wm_OnLastTenSeconds;
-            wm.OnHalfTime += Wm_OnHalfTime;
-            wm.OnNextRound += Wm_OnNextRound;
-            wm.OnRestStart += Wm_OnRestStart;
+            manager.OnLastRound += ManagerOnLastRound;
+            manager.OnLastTenSeconds += ManagerOnLastTenSeconds;
+            manager.OnHalfTime += ManagerOnHalfTime;
+            manager.OnNextRound += ManagerOnNextRound;
+            manager.OnRestStart += ManagerOnRestStart;
 
-            wm.OnRestTimerTick += Wm_OnRestTimerTick;
-            wm.OnWorkTimerTick += Wm_OnWorkTimerTick;
+            manager.OnRestTimerTick += ManagerOnRestTimerTick;
+            manager.OnWorkTimerTick += ManagerOnWorkTimerTick;
 
-            wm.OnStart += Wm_OnNextRound; // to samo co nastepna runda
-            wm.OnFinish += Wm_OnFinish;
+            manager.OnStart += ManagerOnNextRound; // to samo co nastepna runda
+            manager.OnFinish += ManagerOnFinish;
         }
 
 
@@ -83,7 +84,7 @@ namespace CountdownTimer_p2
 
         private string GetRoundText()
         {
-            return $" seria {(wm.Rounds - wm.CurrentRound + 1)} z {wm.Rounds}";
+            return $" seria {(manager.Rounds - manager.CurrentRound + 1)} z {manager.Rounds}";
         }
 
         private void ResetInterface()
@@ -109,8 +110,8 @@ namespace CountdownTimer_p2
             var workS = getTimeInSeconds(workBox?.SelectedItem?.ToString());
             var restS = getTimeInSeconds(restBox?.SelectedItem?.ToString());
 
-            wm.SetupWorkout(workS, restS, GetRound());
-            wm.Start();
+            manager.SetupWorkout(workS, restS, GetRound());
+            manager.Start();
 
             roundDisplayLabelxx.Text = GetRoundText();
 
@@ -121,14 +122,14 @@ namespace CountdownTimer_p2
         {
             if (pauseButton.Text == "Pause")
             {
-                wm.Stop();
+                manager.Stop();
 
                 pauseButton.Text = "Start";
 
             }
             else
             {
-                wm.Pause();
+                manager.Pause();
 
                 pauseButton.Text = "Pause";
                 TimerLabel.Visible = true;
@@ -138,7 +139,7 @@ namespace CountdownTimer_p2
 
         private void resetButton_Click(object sender, EventArgs e)
         {
-            wm.Reset();
+            manager.Reset();
 
             roundDisplayLabelxx.Text = GetRoundText();
 
@@ -152,7 +153,7 @@ namespace CountdownTimer_p2
         #region Handle Events from Workout manager
 
 
-        private void Wm_OnWorkTimerTick(object? sender, WorkoutManager.SecondsEventArgs e)
+        private void ManagerOnWorkTimerTick(object? sender, WorkoutManager.SecondsEventArgs e)
         {
             BeginInvoke(() =>
             {
@@ -160,7 +161,7 @@ namespace CountdownTimer_p2
             });
         }
 
-        private void Wm_OnRestTimerTick(object? sender, WorkoutManager.SecondsEventArgs e)
+        private void ManagerOnRestTimerTick(object? sender, WorkoutManager.SecondsEventArgs e)
         {
             BeginInvoke( () =>
             {
@@ -168,7 +169,7 @@ namespace CountdownTimer_p2
             });
         }
 
-        private void Wm_OnNextRound(object? sender, EventArgs e)
+        private void ManagerOnNextRound(object? sender, EventArgs e)
         {
             BeginInvoke(() =>
             {
@@ -178,17 +179,17 @@ namespace CountdownTimer_p2
             });
         }
 
-        private void Wm_OnHalfTime(object? sender, EventArgs e)
+        private void ManagerOnHalfTime(object? sender, EventArgs e)
         {
             sounds.warning();
         }
 
-        private void Wm_OnLastTenSeconds(object? sender, EventArgs e)
+        private void ManagerOnLastTenSeconds(object? sender, EventArgs e)
         {
             sounds.beep();
         }
 
-        private void Wm_OnLastRound(object? sender, EventArgs e)
+        private void ManagerOnLastRound(object? sender, EventArgs e)
         {
             BeginInvoke(() =>
             {
@@ -198,7 +199,7 @@ namespace CountdownTimer_p2
             });
         }
 
-        private void Wm_OnRestStart(object? sender, EventArgs e)
+        private void ManagerOnRestStart(object? sender, EventArgs e)
         {
             BeginInvoke(() =>
             {
@@ -207,7 +208,7 @@ namespace CountdownTimer_p2
             });
         }
 
-        private void Wm_OnFinish(object? sender, EventArgs e)
+        private void ManagerOnFinish(object? sender, EventArgs e)
         {
             BeginInvoke(() =>
             {

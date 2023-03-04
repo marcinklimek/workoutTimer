@@ -1,4 +1,4 @@
-﻿namespace CountdownTimer_p2
+﻿namespace WorkoutTimer
 {
     partial class MainScreen
     {
