@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CountdownTimer_p2": {
+      "commandName": "Project",
+      "workingDirectory": "c:\\workspace\\bartek\\CountdownTimer_p2\\CountdownTimer_p2\\bin\\Debug\\net7.0-windows\\"
+    }
+  }
+}
