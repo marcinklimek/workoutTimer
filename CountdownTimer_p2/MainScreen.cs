@@ -2,70 +2,59 @@ using Microsoft.VisualBasic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Drawing.Text;
-using System.Media;
 using System.Text;
+using System.Timers;
 
 namespace CountdownTimer_p2
 {
-    #region
     public partial class MainScreen : Form
     {
-        private int total_work_seconds;
-        private int total_rest_seconds;
-        private int current_round;
-
-        SoundPlayer? beepPlay;
-        SoundPlayer? roundPlay;
-        SoundPlayer? monsterPlay;
-        SoundPlayer? applausePlay;
-        SoundPlayer? warningPlay;
-        SoundPlayer? finalPlay;
-
-        private int total_work_seconds_half;
-        private int total_rest_seconds_half;
+        private Sounds sounds;
+        private WorkoutManager wm;
 
 
         public MainScreen()
         {
             InitializeComponent();
+
+            sounds = new Sounds();
+            wm = new WorkoutManager();
+
+            wm.OnLastRound += Wm_OnLastRound;
+            wm.OnLastTenSeconds += Wm_OnLastTenSeconds;
+            wm.OnHalfTime += Wm_OnHalfTime;
+            wm.OnNextRound += Wm_OnNextRound;
+            wm.OnRestStart += Wm_OnRestStart;
+
+            wm.OnRestTimerTick += Wm_OnRestTimerTick;
+            wm.OnWorkTimerTick += Wm_OnWorkTimerTick;
+
+            wm.OnStart += Wm_OnNextRound; // to samo co nastepna runda
+            wm.OnFinish += Wm_OnFinish;
         }
 
-        private void SetupSounds()
-        {
-            beepPlay = new SoundPlayer(@"sounds\beep.wav");
-            roundPlay = new SoundPlayer(@"sounds\Gong.wav");
-            monsterPlay = new SoundPlayer(@"sounds\monster.wav");
-            applausePlay = new SoundPlayer(@"sounds\applause.wav");
-            warningPlay = new SoundPlayer(@"sounds\emergency.wav");
-            finalPlay = new SoundPlayer(@"sounds\final.wav");
-        }
 
         private void MainScreen_Load(object sender, EventArgs e)
         {
-            SetupSounds();
-
             for (int i = 0; i <= 10; i++)
             {
                 workBox.Items.Add(i.ToString());
             }
-            workBox.SelectedIndex = 2;
+            workBox.SelectedIndex = 1;
 
             for (int i = 0; i <= 10; i++)
             {
                 restBox.Items.Add(i.ToString());
             }
 
-            restBox.SelectedIndex = 2;
+            restBox.SelectedIndex = 1;
 
             for (int i = 0; i <= 10; i++)
             {
                 roundBox.Items.Add(i.ToString());
             }
-            roundBox.SelectedIndex = 2;
+            roundBox.SelectedIndex = 1;
 
-
-            workTimer.Interval = 75;
-            restTimer.Interval = 75;
 
             resetButton.Enabled = false;
             pauseButton.Enabled = false;
@@ -87,66 +76,6 @@ namespace CountdownTimer_p2
         }
 
 
-        private void setupWorkTimer()
-        {
-            total_work_seconds = getTimeInSeconds(workBox?.SelectedItem?.ToString());
-            total_work_seconds_half = total_work_seconds / 2;
-
-            roundSound();
-        }
-
-        private void setupRestTimer()
-        {
-            total_rest_seconds = getTimeInSeconds(restBox.SelectedItem.ToString());
-            total_rest_seconds_half = total_rest_seconds / 2;
-        }
-
-        private void setupTimers()
-        {
-            TimerLabel.BackColor = Color.Red;
-
-            setupWorkTimer();
-            workTimer.Enabled = true;
-
-            setupRestTimer();
-            restTimer.Enabled = false;
-        }
-
-        private void setCurrentRound()
-        {
-            string str = roundBox.SelectedItem.ToString() ?? "0";
-
-            current_round = int.Parse(str);
-        }
-
-        private void beepSound()
-        {
-            beepPlay?.Play();
-        }
-
-        private void roundSound()
-        {
-            roundPlay?.Play();
-        }
-
-        private void monsterSound()
-        {
-            monsterPlay?.Play();
-        }
-
-        private void applauseSound()
-        {
-            applausePlay?.Play();
-        }
-        private void warningSound()
-        {
-            warningPlay?.Play();
-        }
-        private void finalSound()
-        {
-            finalPlay?.Play();
-        }
-
         private int GetRound()
         {
             return int.Parse(roundBox.SelectedItem.ToString() ?? "0");
@@ -154,111 +83,13 @@ namespace CountdownTimer_p2
 
         private string GetRoundText()
         {
-            return $" seria {(GetRound() - current_round + 1)} z {GetRound()}";
+            return $" seria {(wm.Rounds - wm.CurrentRound + 1)} z {wm.Rounds}";
         }
 
         private void ResetInterface()
         {
             //todo: add code to clean everyting n the screen afte the workout
             roundDisplayLabelxx.Text = string.Empty;
-        }
-        #endregion
-
-        private void startButton_Click(object sender, EventArgs e)
-        {
-            resetButton.Enabled = true;
-            pauseButton.Enabled = true;
-
-            setupTimers();
-            setCurrentRound();
-
-            roundDisplayLabelxx.Text = GetRoundText();
-        }
-
-        private void workTimer_Tick(object sender, EventArgs e)
-        {
-            if (total_work_seconds > 0)
-            {
-
-                total_work_seconds--;
-
-                SetTimerText(total_work_seconds);
-
-                if (total_work_seconds == total_work_seconds_half)
-                {
-                    warningSound();
-                }
-
-                if (total_work_seconds <= 10)
-                {
-                    beepSound();
-                }
-
-            }
-            else
-            {
-                if (current_round == 1) // ostatnia
-                {
-
-                    restTimer.Enabled = false;
-
-                    TimerLabel.BackColor = Color.DeepSkyBlue;
-
-                    TimerLabel.Text = ("FUCK");
-                    roundDisplayLabelxx.Text = ("<FUCK-MORE!>");
-
-                    applauseSound();
-                }
-                else
-                {
-                    TimerLabel.BackColor = Color.YellowGreen;
-
-                    monsterSound();
-
-                    workTimer.Stop();
-                    restTimer.Enabled = true;
-                }
-            }
-        }
-
-        private void restTimer_Tick(object sender, EventArgs e)
-        {
-            if (total_rest_seconds > 0)
-            {
-                total_rest_seconds--;
-                SetTimerText(total_rest_seconds);
-
-                if (total_rest_seconds <= 10)
-                {
-                    beepSound();
-                }
-
-                if (total_rest_seconds == total_rest_seconds_half)
-                {
-                    warningSound();
-                }
-            }
-            else
-            {
-                restTimer.Stop();
-
-                current_round--;
-
-                Debug.WriteLine($"current_round = {current_round}");
-
-                if (current_round > 0)
-                {
-                    setupTimers();
-
-                    roundDisplayLabelxx.Text = GetRoundText();
-
-                    workTimer.Start();
-
-                    if (current_round == 1) // przedostatnia
-                        finalSound();
-                    
-                }
-            }
         }
 
         private void SetTimerText(int time_seconds)
@@ -269,36 +100,128 @@ namespace CountdownTimer_p2
             TimerLabel.Text = $"{minutes:00} : {seconds:00}";
         }
 
-        private void roundDisplayLabel_Click(object sender, EventArgs e)
+        #region Handle UI events
+        private void startButton_Click(object sender, EventArgs e)
         {
+            resetButton.Enabled = true;
+            pauseButton.Enabled = true;
+            
+            var workS = getTimeInSeconds(workBox?.SelectedItem?.ToString());
+            var restS = getTimeInSeconds(restBox?.SelectedItem?.ToString());
+
+            wm.SetupWorkout(workS, restS, GetRound());
+            wm.Start();
+
+            roundDisplayLabelxx.Text = GetRoundText();
+
+            TimerLabel.BackColor = Color.Red;
         }
 
         private void pauseButton_Click(object sender, EventArgs e)
         {
             if (pauseButton.Text == "Pause")
             {
-                workTimer.Stop();
+                wm.Stop();
 
                 pauseButton.Text = "Start";
 
             }
             else
             {
+                wm.Pause();
+
                 pauseButton.Text = "Pause";
                 TimerLabel.Visible = true;
-
-                workTimer.Enabled = true;
-
             }
 
         }
 
         private void resetButton_Click(object sender, EventArgs e)
         {
-            workTimer.Stop();
-            restTimer.Stop();
+            wm.Reset();
 
+            roundDisplayLabelxx.Text = GetRoundText();
+
+            TimerLabel.BackColor = Color.Gray;
+
+            TimerLabel.Text = "";
+            roundDisplayLabelxx.Text = "";
         }
+        #endregion
+
+        #region Handle Events from Workout manager
+
+
+        private void Wm_OnWorkTimerTick(object? sender, WorkoutManager.SecondsEventArgs e)
+        {
+            BeginInvoke(() =>
+            {
+                SetTimerText(e.Seconds);
+            });
+        }
+
+        private void Wm_OnRestTimerTick(object? sender, WorkoutManager.SecondsEventArgs e)
+        {
+            BeginInvoke( () =>
+            {
+                 SetTimerText(e.Seconds);
+            });
+        }
+
+        private void Wm_OnNextRound(object? sender, EventArgs e)
+        {
+            BeginInvoke(() =>
+            {
+                roundDisplayLabelxx.Text = GetRoundText();
+                TimerLabel.BackColor = Color.Red;
+                sounds.round();
+            });
+        }
+
+        private void Wm_OnHalfTime(object? sender, EventArgs e)
+        {
+            sounds.warning();
+        }
+
+        private void Wm_OnLastTenSeconds(object? sender, EventArgs e)
+        {
+            sounds.beep();
+        }
+
+        private void Wm_OnLastRound(object? sender, EventArgs e)
+        {
+            BeginInvoke(() =>
+            {
+                roundDisplayLabelxx.Text = GetRoundText();
+                TimerLabel.BackColor = Color.Red;
+                sounds.final();
+            });
+        }
+
+        private void Wm_OnRestStart(object? sender, EventArgs e)
+        {
+            BeginInvoke(() =>
+            {
+                TimerLabel.BackColor = Color.YellowGreen; 
+            });
+        }
+
+        private void Wm_OnFinish(object? sender, EventArgs e)
+        {
+            BeginInvoke(() =>
+            {
+                sounds.applause();
+
+                roundDisplayLabelxx.Text = GetRoundText();
+
+                TimerLabel.BackColor = Color.DeepSkyBlue;
+
+                TimerLabel.Text = ("FUCK");
+                roundDisplayLabelxx.Text = ("<FUCK-MORE!>");
+            });
+        }
+
+#endregion
     }
 }
 

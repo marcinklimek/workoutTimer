@@ -41,8 +41,7 @@
             this.workBox = new System.Windows.Forms.ComboBox();
             this.restBox = new System.Windows.Forms.ComboBox();
             this.roundBox = new System.Windows.Forms.ComboBox();
-            this.workTimer = new System.Windows.Forms.Timer(this.components);
-            this.restTimer = new System.Windows.Forms.Timer(this.components);
+
             this.roundDisplayLabelxx = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
@@ -183,14 +182,6 @@
             this.roundBox.Size = new System.Drawing.Size(218, 53);
             this.roundBox.TabIndex = 22;
             // 
-            // workTimer
-            // 
-            this.workTimer.Tick += new System.EventHandler(this.workTimer_Tick);
-            // 
-            // restTimer
-            // 
-            this.restTimer.Tick += new System.EventHandler(this.restTimer_Tick);
-            // 
             // roundDisplayLabelxx
             // 
             this.roundDisplayLabelxx.BackColor = System.Drawing.SystemColors.ControlLight;
@@ -203,7 +194,6 @@
             this.roundDisplayLabelxx.TabIndex = 24;
             this.roundDisplayLabelxx.Text = "1 z 5";
             this.roundDisplayLabelxx.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.roundDisplayLabelxx.Click += new System.EventHandler(this.roundDisplayLabel_Click);
             // 
             // MainScreen
             // 
@@ -245,8 +235,7 @@
         private ComboBox workBox;
         private ComboBox restBox;
         private ComboBox roundBox;
-        private System.Windows.Forms.Timer workTimer;
-        private System.Windows.Forms.Timer restTimer;
+
         private Label roundDisplayLabelxx;
     }
 }
