@@ -1,2 +1,4 @@
-# WorkoutTimer
-WorkoutTimer
+# Workout Timer
+
+Workout Timer
+
