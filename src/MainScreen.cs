@@ -107,10 +107,14 @@ namespace WorkoutTimer
             resetButton.Enabled = true;
             pauseButton.Enabled = true;
             
-            var workS = getTimeInSeconds(workBox?.SelectedItem?.ToString());
-            var restS = getTimeInSeconds(restBox?.SelectedItem?.ToString());
+            var wp = new WorkoutParameters
+            {
+                workout = getTimeInSeconds(workBox?.SelectedItem?.ToString()),
+                rest = getTimeInSeconds(restBox?.SelectedItem?.ToString()),
+                rounds = GetRound()
+            };
 
-            manager.SetupWorkout(workS, restS, GetRound());
+            manager.SetupWorkout(wp);
             manager.Start();
 
             roundDisplayLabelxx.Text = GetRoundText();

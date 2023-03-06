@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>WM</title>
+</head>
+
+<script type="text/javascript">
+
+function isNumeric(str) {
+  if (typeof str != "string") return false // we only process strings!  
+  return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+         !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
+}    
+
+function stopWorkout() {
+    
+    fetch("http://localhost:8080/api/v1/stop/", {
+      method: 'POST',
+      body: ""
+    }).then((response) => { 
+    });    
+  }  
+
+window.addEventListener("load", () => {
+
+  function startWorkout() {
+    
+    const fd = new FormData(form);
+
+    var object = {};
+    fd.forEach((value, key) => {
+        // Reflect.has in favor of: object.hasOwnProperty(key)
+        if(!Reflect.has(object, key)){
+            
+            if ( isNumeric(value) )
+                value = parseInt(value, 10);
+
+            object[key] = value;
+            return;
+        }
+        if(!Array.isArray(object[key])){
+            object[key] = [object[key]];    
+        }
+        object[key].push(value);
+    });
+    var json = JSON.stringify(object);
+
+    fetch("http://localhost:8080/api/v1/start/", {
+      method: 'POST',
+      body: json
+    }).then((response) => { 
+    });    
+  }
+
+  
+
+  // Get the form element
+  const form = document.getElementById("timerForm");
+
+  // Add 'submit' event handler
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    startWorkout();
+  });
+});   
+
+</script>
+
+<body>
+    <h1>Manager</h1>
+
+    <form id="timerForm">
+        <label for="workout">Workout time (min)</label>
+        <input name="workout" type="number" value="1" /> <br />
+
+        <label for="rest">Rest time (min)</label>
+        <input name="rest" type="number" value="1" /> <br />
+
+        <label for="rounds">Rounds</label>
+        <input name="rounds" type="number" value="1" /> <br />
+
+        <input type="submit" value="Start" />
+        <input type="button" value="Stop" onclick="stopWorkout()"/>
+    </form>
+
+</body>
+</html>
