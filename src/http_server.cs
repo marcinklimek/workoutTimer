@@ -9,8 +9,6 @@ using System.Reflection.Metadata;
 
 namespace WorkoutTimer
 {
-
-
     public class Server : Qoollo.Net.Http.HttpServer
     {
         public WorkoutManager Manager;
