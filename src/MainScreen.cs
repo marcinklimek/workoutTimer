@@ -109,8 +109,8 @@ namespace WorkoutTimer
             
             var wp = new WorkoutParameters
             {
-                workout = getTimeInSeconds(workBox?.SelectedItem?.ToString()),
-                rest = getTimeInSeconds(restBox?.SelectedItem?.ToString()),
+                workout = getTimeInSeconds(workBox?.Text),
+                rest = getTimeInSeconds(restBox?.Text),
                 rounds = GetRound()
             };
 
@@ -169,7 +169,7 @@ namespace WorkoutTimer
         {
             BeginInvoke( () =>
             {
-                 SetTimerText(e.Seconds);
+                SetTimerText(e.Seconds);
             });
         }
 

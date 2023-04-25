@@ -27,7 +27,7 @@ public class Sounds
         finalPlay = new SoundPlayer(@"sounds\final.wav");
 
         applausePlay = new List<SoundPlayer>();
-        applausePlay.Add(new SoundPlayer(@"sounds\applause.wav") );
+        applausePlay.Add(new SoundPlayer(@"sounds\applause.wav"));
         applausePlay.Add(new SoundPlayer(@"sounds\applause.wav"));
         applausePlay.Add(new SoundPlayer(@"sounds\applause.wav"));
         applausePlay.Add(new SoundPlayer(@"sounds\applause.wav"));

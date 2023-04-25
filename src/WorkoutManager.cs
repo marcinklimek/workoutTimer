@@ -48,8 +48,8 @@ namespace WorkoutTimer
 
         public WorkoutManager()
         {
-            workTimer = new System.Timers.Timer(500);
-            restTimer = new System.Timers.Timer(500);
+            workTimer = new System.Timers.Timer(1000);
+            restTimer = new System.Timers.Timer(1000);
 
             workTimer.Elapsed += workTimer_Tick;
             workTimer.AutoReset = true;
